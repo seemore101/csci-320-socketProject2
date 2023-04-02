@@ -19,9 +19,9 @@ def upload_file(conn_socket: socket, file_name: str, file_size: int):
         retrieved_size = 0
         try:
             while retrieved_size < file_size:
-                # TODO: section 1 step 6a
-                # TODO: section 1 stop 6b
-                # TODO: section 1 stop 6c
+                data = conn_socket.recv(1024)
+                retrieved_size += len(data)
+                file.write(data)
         except OSError as oe:
             print(oe)
             os.remove(file_name)
@@ -36,11 +36,11 @@ def start_server(ip, port):
     try:
         while True:
             (conn_socket, addr) = server_socket.accept()
-            # TODO: section 1 step 2
+            data = conn_socket.recv(1024)
             # expecting an 8-byte byte string for file size followed by file name
-            # TODO: section 1 step 3
+            file_size, file_name = get_file_info(data)
             print(f'Received: {file_name} with size = {file_size}')
-            # TODO: section 1 step 4
+            conn_socket.sendall(b'go ahead')
             upload_file(conn_socket, file_name, file_size)
             conn_socket.close()
     except KeyboardInterrupt as ki:
